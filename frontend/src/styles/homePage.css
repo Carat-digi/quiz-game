@@ -1,0 +1,80 @@
+/* for title2  */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rubik+Bubbles&display=swap');
+/* for title1 */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+/* for slogan */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rubik+Bubbles&display=swap');
+
+.home-page {
+  text-align: center;
+  margin-top: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: #FCFCFC;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.home-title {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.title1 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #fff;
+  -webkit-text-stroke: 2px  #6b6b6b;
+  font-size: 2.4rem;
+}
+
+.title2 {
+  font-family: 'Rubik Bubbles', cursive;
+  font-weight: 700;
+  color: #FF8C42;
+  font-size: 3rem;
+}
+
+.home-slogan {
+  font-size: 2rem;
+  color: #30292F;
+  /* font-family: 'Montserrat', sans-serif; */
+  font-family: 'Bangers', cursive;
+}
+
+.choice-action {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  flex-direction: row;
+  margin-top: 2rem;
+}
+
+.action-login {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: #4F46E5;
+  border: 2px solid #4F46E5;
+  border-radius: 0.5rem;
+  width: 150px;
+  color: #FFFFFF;
+}
+
+.action-create {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: transparent;
+  border: 2px solid #96897b5e;
+  border-radius: 0.5rem;
+  width: 150px;
+  color: #334155;
+}
+
+.action-create:hover {
+  background-color: #96897b2c;
+}
