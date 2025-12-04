@@ -13,15 +13,36 @@ const userSchema = mongoose.Schema({
   },
   passwordHash: String,
   root: { type: String, enum: ['user', 'admin'], default: 'user' },
-  score: [
+  quizResults: [
     {
       quiz: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Quiz'
+        ref: 'Quiz',
+        required: true
       },
-      bestScore: {
+      score: {
         type: Number,
+        required: true
+      },
+      totalQuestions: {
+        type: Number,
+        required: true
+      },
+      percentage: {
+        type: Number,
+        required: true
+      },
+      timeSpent: {
+        type: Number, // в секундах
         default: 0
+      },
+      attempts: {
+        type: Number,
+        default: 1
+      },
+      completedAt: {
+        type: Date,
+        default: Date.now
       }
     }
   ],
