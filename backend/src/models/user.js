@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
     unique: true
   },
   passwordHash: String,
-  root: String,
+  root: { type: String, enum: ['user', 'admin'], default: 'user' },
   score: [
     {
       quiz: {
