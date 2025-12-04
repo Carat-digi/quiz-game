@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const AppError = require('../utils/appError')
 const asyncHandler = require('./asyncHandler')
+const config = require('../utils/config')
 
 const authenticate = asyncHandler(async (req, res, next) => {
   let token
@@ -14,14 +15,14 @@ const authenticate = asyncHandler(async (req, res, next) => {
     throw new AppError('Not authorized', 401)
   }
   
-  const decoded = jwt.verify(token, process.env.JWT_SECRET)
+  const decoded = jwt.verify(token, config.JWT_SECRET)
   req.user = await User.findById(decoded.id)
   
   next()
 })
 
 const requireAdmin = asyncHandler(async (req, res, next) => {
-  if (req.user.role !== 'admin') {
+  if (req.user.root !== 'admin') {
     throw new AppError('Access denied. Admin rights required', 403)
   }
   next()

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const User = require('../models/user')
 const asyncHandler = require('../middleware/asyncHandler')
+const AppError = require('../utils/appError')
 
 // для куки надо
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access-secret'
@@ -69,7 +70,7 @@ exports.register = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Username or email already in use' })
   }
 
-  const hash = await bcrypt.hash(password, 10);
+  const hash = await bcrypt.hash(password, 10)
   const user = new User({
     username,
     email,
@@ -145,7 +146,7 @@ exports.refreshToken = asyncHandler(async (req, res) => {
 
 exports.logout = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken
-    if (token) {
+  if (token) {
     revokeRefreshToken(token)
   }
   res.clearCookie('refreshToken', { path: '/api' })
