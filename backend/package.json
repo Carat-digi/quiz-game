@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch index.js"
+    "test": "NODE_ENV=test node --test --test-concurrency=1 tests/api.test.js tests/auth.test.js tests/quiz.test.js",
+    "test:all": "NODE_ENV=test node --test --test-concurrency=1",
+    "test:watch": "NODE_ENV=test node --test --watch --test-concurrency=1 tests/api.test.js tests/auth.test.js tests/quiz.test.js",
+    "dev": "node --watch index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +24,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.20.0",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^8.57.1",
+    "eslint-config-standard": "^17.1.0",
+    "globals": "^16.5.0",
+    "supertest": "^7.1.4"
   }
 }
