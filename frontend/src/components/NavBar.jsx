@@ -1,11 +1,19 @@
 import { useAuth } from '../hooks/authContext'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const NavBar = () => {
   const { user } = useAuth()
   const location = useLocation()
   const isLoginPage = location.pathname === '/login'
   const isCreatePage = location.pathname === '/register'
+  const navigate = useNavigate()
+
+  const { logout } = useAuth()
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
   return (
     <header className='nav-bar'>
       <div className='nav-bar-title'>
@@ -19,7 +27,7 @@ const NavBar = () => {
       {user && (
       <div className='nav-bar-info'>
         <div className='nav-bar-username'>{user.username}</div>
-        <div className='nav-bar-logout'>Log out</div>
+        <div className='nav-bar-logout' onClick={handleLogout}>Log out</div>
       </div>
       )}
     </header>
