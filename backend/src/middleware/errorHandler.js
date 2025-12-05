@@ -17,7 +17,9 @@ const SendErrorProd = (err, res) => {
     })
   }
 
-  console.log('UNEXPECTED ERROR:', err)
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('UNEXPECTED ERROR:', err)
+  }
   return res.status(500).json({
     status: 'error',
     message: 'Something went wrong :(',
@@ -35,11 +37,16 @@ const handlerMongoDuplicate = err => {
   return new AppError(message, 409)
 }
 
-const handlerJwtError = err => new AppError('Invalid token. Please log in again', 401)
+const handlerJwtError = _err => new AppError('Invalid token. Please log in again', 401)
 
-const handlerJwtExpired = err => new AppError('Your token has expired. Please log in again', 401)
+const handlerJwtExpired = _err => new AppError('Your token has expired. Please log in again', 401)
 
-module.exports = (err, req, res, next) => {
+const handlerCastError = err => {
+  const message = `Invalid ${err.path}: ${err.value}`
+  return new AppError(message, 400)
+}
+
+module.exports = (err, req, res, _next) => {
   err.statusCode = err.statusCode || 500
   err.status = err.status || 'error'
 
@@ -48,6 +55,7 @@ module.exports = (err, req, res, next) => {
   } else {
     let error = {...err, message: err.message, name: err.name}
 
+    if (err.name === 'CastError') error = handlerCastError(err)
     if (err.name === 'ValidationError' || err.isJoi) error = handlerValidationError(err)
     if (err.code === 11000) error = handlerMongoDuplicate(err)
     if (err.name === 'JsonWebTokenError') error = handlerJwtError()
@@ -55,4 +63,4 @@ module.exports = (err, req, res, next) => {
 
     SendErrorProd(error, res)
   }
-}
+} 

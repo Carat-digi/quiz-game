@@ -39,8 +39,8 @@ app.get('/', (req, res) => {
 })
 
 app.all(/.*/, (req, res, next) => {
-  next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
-});
+  next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404))
+})
 
 app.use(errorHandler)
 
