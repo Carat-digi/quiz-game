@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import '../styles/notFoundPage.css'
 
 const NotFoundPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [countdown, setCountdown] = useState(5)
 
-  // Automatic redirect after 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown(prev => {
@@ -23,43 +23,40 @@ const NotFoundPage = () => {
   }, [navigate])
 
   return (
-    <div className="not-found-page">
-      <div className="not-found-content">
-        <h1 className="error-code">404</h1>
-        <h2>Page Not Found</h2>
-        <p className="error-message">
-          The page <code>{location.pathname}</code> does not exist.
-        </p>
+    <main className="nf-page" role="main">
+      <section className="nf-card" aria-labelledby="nf-title">
+        <div className="nf-body">
+          <h1 id="nf-title" className="nf-title">Page Not Found</h1>
+          <p className="nf-message">The page <code className="nf-path">{location.pathname}</code> does not exist.</p>
 
-        <div className="error-suggestions">
-          <p>You might want to:</p>
-          <ul>
+          <ul className="nf-suggestions">
             <li>Check the URL for typos</li>
-            <li>Go back to the previous page</li>
-            <li>Start from the home page</li>
+            <li>Try searching from the home page</li>
+            <li>Contact support if you think this is an error</li>
           </ul>
-        </div>
 
-        <div className="error-actions">
-          <button
-            className="btn-primary"
-            onClick={() => navigate('/')}
-          >
-            Go to Home
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={() => navigate(-1)}
-          >
-            Go Back
-          </button>
-        </div>
+          <div className="nf-actions">
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/')}
+              aria-label="Go to home page"
+            >
+              Go to Home
+            </button>
 
-        <p className="auto-redirect">
-          Redirecting to home in <strong>{countdown}</strong> seconds...
-        </p>
-      </div>
-    </div>
+            <button
+              className="btn btn-outline"
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+            >
+              Go Back
+            </button>
+          </div>
+
+          <p className="nf-redirect">Redirecting to home in <strong>{countdown}</strong> second{countdown === 1 ? '' : 's'}…</p>
+        </div>
+      </section>
+    </main>
   )
 }
 
