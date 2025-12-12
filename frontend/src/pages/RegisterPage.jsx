@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { registerUser } from '../api/user'
 import '../styles/registerAndLoginPage.css'
 
 const RegisterPage = ({ showToast }) => {
+  const navigate = useNavigate()
+
   const [form, setForm] = useState({
     email: '',
     username: '',
@@ -23,6 +25,7 @@ const RegisterPage = ({ showToast }) => {
       await registerUser({ username: form.username, email: form.email, password: form.password })
       showToast('Registration successful!', 'success')
       setForm({ email: '', username: '', password: '', confirmPassword: '' })
+      navigate('/login')
     }
     catch (err) {
       showToast(err.message, 'error')
