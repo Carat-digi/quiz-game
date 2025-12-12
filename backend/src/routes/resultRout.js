@@ -3,25 +3,25 @@ const router = express.Router()
 const resultController = require('../controllers/resultCtrl')
 const { authenticate } = require('../middleware/auth')
 
-// all routes below require authentication
+// Public route - leaderboard for a quiz (NO AUTHENTICATION REQUIRED)
+router.get('/leaderboard/:quizId', resultController.getQuizLeaderboard)
+
+// All routes below require authentication
 router.use(authenticate)
 
-// Save/update quiz result
-router.post('/', resultController.saveQuizResult)
-
-// Get all user results
-router.get('/', resultController.getUserResults)
-
-// Get user statistics
+// Get user statistics (MUST be before generic GET route)
 router.get('/stats', resultController.getUserStats)
 
-// Get result for a specific quiz
+// Get result for a specific quiz (MUST be before generic GET route)
 router.get('/quiz/:quizId', resultController.getQuizResult)
 
 // Delete result for a quiz
 router.delete('/quiz/:quizId', resultController.deleteQuizResult)
 
-// Public route - leaderboard for a quiz
-router.get('/leaderboard/:quizId', resultController.getQuizLeaderboard)
+// Save/update quiz result
+router.post('/', resultController.saveQuizResult)
+
+// Get all user results (generic - MUST be last)
+router.get('/', resultController.getUserResults)
 
 module.exports = router

@@ -5,15 +5,48 @@ const AppError = require('../utils/appError')
 
 // save or update quiz result for a user
 exports.saveQuizResult = asyncHandler(async (req, res, next) => {
+  console.log('\n=== DEBUG: saveQuizResult STARTED ===')
+  console.log('Request method:', req.method)
+  console.log('Request URL:', req.url)
+  console.log('Content-Type:', req.headers['content-type'])
+
   const { quizId, answers, timeSpent } = req.body
-  
-  if (!quizId || !answers) {
-    return next(new AppError('Quiz ID and answers are required', 400))
+
+  console.log('Extracted from body:')
+  console.log('  quizId:', quizId)
+  console.log('  answers type:', typeof answers)
+  console.log('  answers length:', answers ? answers.length : 'undefined')
+  console.log('  answers content:', JSON.stringify(answers).substring(0, 200))
+  console.log('  timeSpent:', timeSpent)
+
+  if (!req.user) {
+    console.log('FAIL: User not authenticated')
+    return next(new AppError('Not authenticated', 401))
   }
+  console.log('User authenticated:', req.user._id)
+
+  if (!quizId) {
+    console.log('FAIL: Missing quizId')
+    return next(new AppError('Quiz ID is required', 400))
+  }
+  console.log('quizId validated:', quizId)
+
+  if (!answers) {
+    console.log('FAIL: Missing answers')
+    return next(new AppError('Answers array is required', 400))
+  }
+
+  if (!Array.isArray(answers)) {
+    console.log('FAIL: answers is not array, type:', typeof answers)
+    return next(new AppError('Answers must be an array', 400))
+  }
+  console.log('answers validation passed, length:', answers.length)
+  console.log('answers content (first 5):', answers.slice(0, 5))
+  console.log('answers types:', answers.map((a, i) => `[${i}]=${a}(${typeof a})`).join(', ').substring(0, 200))
 
   // get the quiz
   const quiz = await Quiz.findById(quizId).populate('questions')
-  
+
   if (!quiz) {
     return next(new AppError('Quiz not found', 404))
   }
@@ -30,12 +63,16 @@ exports.saveQuizResult = asyncHandler(async (req, res, next) => {
   const totalQuestions = quiz.questions.length
   const percentage = Math.round((correctCount / totalQuestions) * 100)
 
+  console.log('DEBUG: calculated score:', { correctCount, totalQuestions, percentage })
+
   // Find the user
   const user = await User.findById(req.user._id)
 
+  console.log('DEBUG: user found:', user._id, 'has', user.quizResults.length, 'results')
+
   // Find existing result for this quiz
   const existingResultIndex = user.quizResults.findIndex(
-    r => r.quiz.toString() === quizId
+    r => r.quiz.toString() === quizId.toString()
   )
 
   let isNewBest = false
@@ -44,7 +81,7 @@ exports.saveQuizResult = asyncHandler(async (req, res, next) => {
   if (existingResultIndex !== -1) {
     // Result already exists - update if new one is better
     const existingResult = user.quizResults[existingResultIndex]
-    
+
     if (correctCount > existingResult.score) {
       // New result is better - update
       existingResult.score = correctCount
@@ -59,6 +96,7 @@ exports.saveQuizResult = asyncHandler(async (req, res, next) => {
       existingResult.attempts += 1
       existingResult.completedAt = new Date()
     }
+    user.markModified('quizResults')
   } else {
     // First attempt - add new result
     user.quizResults.push({
@@ -76,6 +114,14 @@ exports.saveQuizResult = asyncHandler(async (req, res, next) => {
 
   await user.save()
 
+  console.log('DEBUG: user saved with results:', user.quizResults.length, 'results total')
+
+  // Refresh user data to get updated attempts count
+  const updatedUser = await User.findById(req.user._id)
+  const updatedResultIndex = updatedUser.quizResults.findIndex(
+    r => r.quiz.toString() === quizId.toString()
+  )
+
   res.status(201).json({
     message: 'Result saved successfully',
     result: {
@@ -84,8 +130,8 @@ exports.saveQuizResult = asyncHandler(async (req, res, next) => {
       percentage,
       isNewBest,
       isFirstAttempt,
-      currentAttempt: existingResultIndex !== -1 
-        ? user.quizResults[existingResultIndex].attempts 
+      currentAttempt: updatedResultIndex !== -1
+        ? updatedUser.quizResults[updatedResultIndex].attempts
         : 1
     }
   })
