@@ -56,7 +56,6 @@ const QuizPage = () => {
 
   return (
     <div className="quiz-page">
-      {/* <h1 className="page-title">Quizzes</h1> */}
       <div className="quiz-controls">
         <div className="quiz-search">
           <input
@@ -64,20 +63,23 @@ const QuizPage = () => {
             placeholder="Search quizzes..."
             value={search}
             onChange={handleSearchChange}
+            className="search-input"
           />
         </div>
-        <div className="quiz-sort">
-          <label htmlFor="sort">Sort by:</label>
-          <select id="sort" name="sort" value={sort} onChange={handleSortChange} className="sort-select">
-            <option value="alphabetical">A-Z</option>
-            <option value="dateAdded">Date Add</option>
-          </select>
-        </div>
-        {user?.root === 'admin' && (
-          <div className="quiz-create"> {/* for admins only */ }
-            <button onClick={handleCreateQuiz} className="create-quiz-button">New Quiz</button> {/* or + icon */}
+        <div className="quiz-actions-bar">
+          <div className="quiz-sort">
+            <label htmlFor="sort" className="sort-label">Sort by:</label>
+            <select id="sort" name="sort" value={sort} onChange={handleSortChange} className="sort-select">
+              <option value="alphabetical">A-Z</option>
+              <option value="dateAdded">Date Add</option>
+            </select>
           </div>
-        )}
+          {user?.root === 'admin' && (
+            <div className="quiz-create"> {/* for admins only */ }
+              <button onClick={handleCreateQuiz} className="create-quiz-button">New Quiz</button> {/* or + icon */}
+            </div>
+          )}
+        </div>
       </div>
       <div className="quiz-list-grid">
         {loading ? (

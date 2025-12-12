@@ -72,9 +72,9 @@ const QuizTile = ({ quiz, onDelete }) => {
             <span className="quiz-creator">By: {quiz.creator?.username || 'QuizMan'}</span>
           </div>
           <div className="quiz-actions">
-            <button onClick={handleClick}>Take Quiz</button>
+            <button onClick={handleClick} className="btn-take-quiz">Take Quiz</button>
             {user?.root === 'admin' && (
-              <button className="quiz-delete" onClick={handleDelete} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete Quiz'}</button>
+              <button className="btn-quiz-delete" onClick={handleDelete} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete Quiz'}</button>
             )}
           </div>
         </div>
