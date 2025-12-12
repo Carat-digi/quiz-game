@@ -30,26 +30,26 @@ const RegisterPage = ({ showToast }) => {
   }
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
-  
+
   return (
     <div className='register-page'>
       <h1>Create Account</h1>
       <form onSubmit={createHandle} className='register-form'>
         <div className='celsForm'>
           <label htmlFor='email'>Email</label>
-          <input type='email' name='email' value={form.email} onChange={handleChange} id='email' required  />
+          <input type='email' name='email' value={form.email} onChange={handleChange} id='email' required />
         </div>
         <div className='celsForm'>
           <label htmlFor='username'>Username</label>
-          <input type='text' name='username' value={form.username} onChange={handleChange} id='username' required  />
+          <input type='text' name='username' value={form.username} onChange={handleChange} id='username' required />
         </div>
         <div className='celsForm'>
           <label htmlFor='password'>Password</label>
-          <input type='password' name='password' value={form.password} onChange={handleChange} id='password' required  />
+          <input type='password' name='password' value={form.password} onChange={handleChange} id='password' required />
         </div>
         <div className='celsForm'>
           <label htmlFor='confirmPassword'>Confirm Password</label>
-          <input type='password' name='confirmPassword' value={form.confirmPassword} onChange={handleChange} id='confirmPassword' required  />
+          <input type='password' name='confirmPassword' value={form.confirmPassword} onChange={handleChange} id='confirmPassword' required />
         </div>
         <div className='celsFormBut'>
           <button type='submit'>Register</button>
@@ -62,6 +62,6 @@ const RegisterPage = ({ showToast }) => {
         </div>
       </div>
     </div>
-  )     
+  )
 }
 export default RegisterPage

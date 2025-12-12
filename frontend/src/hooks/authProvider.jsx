@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { logoutUser } from '../api/user'
 import { AuthContext } from './authContext'
+import logger from '../utils/logger'
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
       try {
         return JSON.parse(savedUser)
       } catch (err) {
-        console.error('Failed to parse user from localStorage', err)
+        logger.error('Failed to parse user from localStorage', err)
         localStorage.removeItem('user')
         return null
       }
@@ -21,21 +22,21 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('accessToken')
     return !!(token && user)
   })
-  
+
   const login = (accessToken, userData) => {
-    console.log('Login called with:', { accessToken, userData })
+    logger.log('Login called with:', { accessToken, userData })
     localStorage.setItem('accessToken', accessToken)
     localStorage.setItem('user', JSON.stringify(userData))
     setUser(userData)
     setIsAuthenticated(true)
-    console.log('Login completed')
+    logger.log('Login completed')
   }
 
   const logout = async () => {
     try {
       await logoutUser()
     } catch (error) {
-      console.error('Logout error:', error)
+      logger.error('Logout error:', error)
     }
     localStorage.removeItem('accessToken')
     localStorage.removeItem('user')

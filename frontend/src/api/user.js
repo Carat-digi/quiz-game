@@ -1,8 +1,9 @@
 import axios from 'axios'
+import logger from '../utils/logger'
 
 const api = axios.create({
   baseURL: 'http://localhost:3001/api',
-  withCredentials: true,
+  withCredentials: true
 })
 
 api.interceptors.request.use((config) => {
@@ -17,37 +18,50 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
-    console.log('Interceptor caught error:', {
+    logger.log('Interceptor caught error:', {
       url: originalRequest.url,
       status: error.response?.status,
       message: error.response?.data?.message
     })
+    // Handle invalid signature error (old token with wrong secret)
+    if (error.response?.status === 500 && error.response?.data?.message === 'invalid signature') {
+      logger.log('Invalid token signature detected - clearing auth data')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+      return Promise.reject(error)
+    }
     // if 401 error and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
-      
+
       // Don't try to refresh on login/register endpoints
       if (originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/register')) {
-        console.log('Skipping refresh for auth endpoint')
+        logger.log('Skipping refresh for auth endpoint')
         return Promise.reject(error)
       }
-      
+
       try {
-        console.log('Attempting token refresh...')
+        logger.log('Attempting token refresh...')
         // Request a new accessToken using the refreshToken
         const { data } = await axios.post(
           'http://localhost:3001/api/auth/refresh',
           {},
           { withCredentials: true } // will send refreshToken cookie
         )
-        
+
         // Save the new accessToken
         localStorage.setItem('accessToken', data.accessToken)
-        
+
+        // Update user data if provided
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user))
+        }
+
         // Retry the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
         return api(originalRequest)
-        
+
       } catch (refreshError) {
         // Refresh token also expired - log out
         localStorage.removeItem('accessToken')
@@ -65,7 +79,7 @@ export const registerUser = async ({ username, email, password }) => {
     const response = await api.post('/auth/register', {
       username,
       email,
-      password,
+      password
     })
     return response.data // successful registration response
   } catch (error) {
@@ -95,7 +109,7 @@ export const logoutUser = async () => {
     const res = await api.post('/auth/logout')
     return res.data
   } catch (err) {
-    const message = 
+    const message =
       err.response?.data?.message ||
       err.message ||
       'Unknown error'

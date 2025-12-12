@@ -3,23 +3,24 @@ import '../styles/registerAndLoginPage.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { loginUser } from '../api/user'
 import { useAuth } from '../hooks/authContext'
+import logger from '../utils/logger'
 
 const LoginPage = ({ showToast }) => {
   const [form, setForm] = useState({ email: '', password: '' })
   const navigate = useNavigate()
   const { login } = useAuth()
-  
+
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
       const res = await loginUser({ email: form.email, password: form.password })
-      console.log('Login response:', res)
+      logger.log('Login response:', res)
       login(res.accessToken, res.user)
-      console.log('Navigating to /my')
-      setForm({ email: '', password: ''})
+      logger.log('Navigating to /my')
+      setForm({ email: '', password: '' })
       navigate('/my')
     } catch (err) {
-      console.error('Login error:', err)
+      logger.error('Login error:', err)
       showToast(err.message, 'error')
     }
   }
@@ -30,20 +31,20 @@ const LoginPage = ({ showToast }) => {
       <form onSubmit={handleLogin} className='login-form'>
         <div className='celsForm'>
           <label htmlFor='email'>Email:</label>
-          <input 
-            type='text' 
-            id='email' 
-            value={form.email} 
+          <input
+            type='text'
+            id='email'
+            value={form.email}
             onChange={handleChange}
             name='email'
           />
         </div>
         <div className='celsForm'>
           <label htmlFor='password'>Password:</label>
-          <input 
-            type='password' 
-            id='password' 
-            value={form.password} 
+          <input
+            type='password'
+            id='password'
+            value={form.password}
             onChange={handleChange}
             autoComplete='off'
             name='password'
