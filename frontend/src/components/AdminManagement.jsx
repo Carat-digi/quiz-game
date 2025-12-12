@@ -3,6 +3,7 @@ import { getAllUsers, updateUserRole, deleteUser } from '../api/user'
 import { useAuth } from '../hooks/authContext'
 import logger from '../utils/logger'
 import '../styles/adminManagement.css'
+import ConfirmDialog from './ConfirmDialog'
 
 const AdminManagement = () => {
   const { user } = useAuth()
@@ -11,6 +12,8 @@ const AdminManagement = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOptions, setDialogOptions] = useState({})
 
   useEffect(() => {
     loadUsers()
@@ -36,7 +39,7 @@ const AdminManagement = () => {
     loadUsers(searchTerm)
   }
 
-  const handleRoleChange = async (userId, currentRole) => {
+  const handleRoleChange = async (userId, currentRole, username) => {
     logger.log('handleRoleChange called:', { userId, currentRole, currentUserId: user?.id })
 
     if (!userId || userId === 'undefined') {
@@ -51,26 +54,33 @@ const AdminManagement = () => {
       return
     }
 
-    const newRole = currentRole === 'admin' ? 'user' : 'admin'
-    const confirmMessage = `Are you sure you want to ${newRole === 'admin' ? 'promote' : 'demote'} this user?`
+    const isPromote = currentRole !== 'admin'
+    const newRole = isPromote ? 'admin' : 'user'
 
-    if (!window.confirm(confirmMessage)) {
-      return
-    }
-
-    try {
-      setError('')
-      setSuccessMessage('')
-      await updateUserRole(userId, newRole)
-      setSuccessMessage(`User role updated to ${newRole}`)
-      setTimeout(() => setSuccessMessage(''), 3000)
-      // Reload users list
-      loadUsers(searchTerm)
-    } catch (error) {
-      logger.error('Error updating user role:', error)
-      setError(error.message)
-      setTimeout(() => setError(''), 3000)
-    }
+    // Show confirmation dialog (use explicit isPromote for clarity)
+    setDialogOptions({
+      title: isPromote ? 'Confirm promotion' : 'Confirm demotion',
+      message: `Are you sure you want to ${isPromote ? 'promote' : 'demote'} user "${username || ''}"?`,
+      details: [],
+      danger: !isPromote,
+      confirmLabel: isPromote ? 'Promote' : 'Demote',
+      cancelLabel: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setError('')
+          setSuccessMessage('')
+          await updateUserRole(userId, newRole)
+          setSuccessMessage(`User role updated to ${newRole}`)
+          setTimeout(() => setSuccessMessage(''), 3000)
+          loadUsers(searchTerm)
+        } catch (err) {
+          logger.error('Error updating user role:', err)
+          setError(err.message || 'Error updating role')
+          setTimeout(() => setError(''), 3000)
+        }
+      }
+    })
+    setDialogOpen(true)
   }
 
   const clearSearch = () => {
@@ -91,25 +101,29 @@ const AdminManagement = () => {
       return
     }
 
-    const confirmMessage = `Are you sure you want to DELETE user "${username}"? This action cannot be undone.`
-
-    if (!window.confirm(confirmMessage)) {
-      return
-    }
-
-    try {
-      setError('')
-      setSuccessMessage('')
-      await deleteUser(userId)
-      setSuccessMessage(`User "${username}" deleted successfully`)
-      setTimeout(() => setSuccessMessage(''), 3000)
-      // Reload users list
-      loadUsers(searchTerm)
-    } catch (error) {
-      logger.error('Error deleting user:', error)
-      setError(error.message)
-      setTimeout(() => setError(''), 3000)
-    }
+    setDialogOptions({
+      title: 'Confirm deletion',
+      message: `Are you sure you want to delete user "${username}"?`,
+      details: ['Deleting the account is irreversible: all related data will be lost.'],
+      danger: true,
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setError('')
+          setSuccessMessage('')
+          await deleteUser(userId)
+          setSuccessMessage(`User "${username}" deleted successfully`)
+          setTimeout(() => setSuccessMessage(''), 3000)
+          loadUsers(searchTerm)
+        } catch (err) {
+          logger.error('Error deleting user:', err)
+          setError(err.message || 'Error deleting user')
+          setTimeout(() => setError(''), 3000)
+        }
+      }
+    })
+    setDialogOpen(true)
   }
 
   if (loading) {
@@ -177,7 +191,7 @@ const AdminManagement = () => {
                   <td>
                     <div className="actions-buttons">
                       <button
-                        onClick={() => handleRoleChange(u.id, u.root)}
+                        onClick={() => handleRoleChange(u.id, u.root, u.username)}
                         className={`role-toggle-btn ${u.root === 'admin' ? 'demote' : 'promote'}`}
                         disabled={String(u.id) === String(user?.id)}
                       >
@@ -204,6 +218,11 @@ const AdminManagement = () => {
         <p>Admins: {users.filter(u => u.root === 'admin').length}</p>
         <p>Regular users: {users.filter(u => u.root === 'user').length}</p>
       </div>
+      <ConfirmDialog
+        isOpen={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        {...dialogOptions}
+      />
     </div>
   )
 }

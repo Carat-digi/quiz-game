@@ -1,19 +1,36 @@
 import '../styles/confirmDialog.css'
 
-const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, details }) => {
+const ConfirmDialog = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title = 'Confirm action',
+  message = 'Are you sure you want to continue?',
+  details = [],
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  danger = false,
+  icon = '⚠️'
+}) => {
   if (!isOpen) return null
 
-  const handleConfirm = () => {
-    onConfirm()
-    onClose()
+  const handleConfirm = async () => {
+    try {
+      await onConfirm()
+    } finally {
+      onClose()
+    }
   }
 
   return (
-    <div className="confirm-overlay" onClick={onClose}>
-      <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="confirm-header">
-          <h2>{title}</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+    <div className="confirm-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className={`confirm-dialog ${danger ? 'danger' : 'neutral'}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`confirm-header ${danger ? 'danger' : 'neutral'}`}>
+          <h2 className='confirm-title'>
+            <span className="confirm-icon" aria-hidden>{icon}</span>
+            {title}
+          </h2>
+          <button className="close-btn" onClick={onClose} aria-label="Close">×</button>
         </div>
 
         <div className="confirm-body">
@@ -26,16 +43,14 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, details }) 
               ))}
             </ul>
           )}
-
-          <p className="confirm-warning">⚠️ This action cannot be undone!</p>
         </div>
 
         <div className="confirm-actions">
           <button className="btn-cancel" onClick={onClose}>
-            Cancel
+            {cancelLabel}
           </button>
-          <button className="btn-confirm" onClick={handleConfirm}>
-            Delete
+          <button className={`btn-confirm ${danger ? 'danger' : 'neutral'}`} onClick={handleConfirm}>
+            {confirmLabel}
           </button>
         </div>
       </div>
