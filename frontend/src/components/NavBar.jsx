@@ -14,10 +14,15 @@ const NavBar = () => {
     navigate('/login')
   }
 
+  const handleUser = () => {
+    navigate('/profile')
+  }
+
   return (
     <header className='nav-bar'>
       <div className='nav-bar-title'>
-        <h3><Link to="/">QuizGame</Link></h3>
+        {user && (<h3><Link to="/my">QuizGame</Link></h3>)}
+        {!user && (<h3><Link to="/">QuizGame</Link></h3>)}
       </div>
       {!user && !isLoginPage && !isCreatePage && (
         <div className='nav-bar-info'>
@@ -25,10 +30,10 @@ const NavBar = () => {
         </div>
       )}
       {user && (
-      <div className='nav-bar-info'>
-        <div className='nav-bar-username'>{user.username}</div>
-        <div className='nav-bar-logout' onClick={handleLogout}>Log out</div>
-      </div>
+        <div className='nav-bar-info'>
+          <div className='nav-bar-username' onClick={handleUser}>{user.username}</div>
+          <div className='nav-bar-logout' onClick={handleLogout}>Log out</div>
+        </div>
       )}
     </header>
   )

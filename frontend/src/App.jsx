@@ -9,6 +9,10 @@ import RegisterPage from './pages/RegisterPage'
 import QuizPage from './pages/QuizPage'
 import NotFoundPage from './pages/NotFoundPage'
 import Footer from './components/Footer'
+import QuizDetailPage from './pages/QuizDetailPage'
+import RequireAdmin from './components/RequireAdmin'
+import QuizFormPage from './pages/QuizFormPage'
+import ProfilePage from './pages/ProfilePage'
 
 const App = () => {
   const location = useLocation()
@@ -17,29 +21,50 @@ const App = () => {
   const [toast, setToast] = useState({ message: '', type: '' })
   const showToast = ( message, type ) => {
     setToast({ message, type })
-    setTimeout(() => setToast({ message: '', type: '' }), 4000)
+    setTimeout(() => setToast({ message: '', type: '' }), 5000)
   }
 
   return (
     <>
-      {!isHomePage && <NavBar />}
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ message: '', type: '' })}
-      />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage showToast={showToast} />} />
-        <Route path="/register" element={<RegisterPage showToast={showToast} />} />
-        <Route path="/my" element={
-          <RequireAuth>
-            <QuizPage />
-          </RequireAuth>
-        }/>
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-      <Footer />
+      <div className="app">
+        {!isHomePage && <NavBar />}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ message: '', type: '' })}
+        />
+        <main className="app-main">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage showToast={showToast} />} />
+            <Route path="/register" element={<RegisterPage showToast={showToast} />} />
+            <Route path="/my" element={
+              <RequireAuth>
+                <QuizPage />
+              </RequireAuth>
+            }/>
+            <Route path="/quiz/:id" element={
+              <RequireAuth>
+                <QuizDetailPage />
+              </RequireAuth>
+            }/>
+            <Route path="/quiz/create" element={
+              <RequireAuth>
+                <RequireAdmin>
+                  <QuizFormPage />
+                </RequireAdmin>
+              </RequireAuth>
+            }/>
+            <Route path="/profile" element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }/>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </>
   )
 }
