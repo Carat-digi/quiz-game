@@ -31,7 +31,10 @@ const NavBar = () => {
       )}
       {user && (
         <div className='nav-bar-info'>
-          <div className='nav-bar-username' onClick={handleUser}>{user.username}</div>
+          <div className='nav-bar-user'>
+            {user?.root === 'admin' && (<span className="admin-icon">👑</span>)}
+            <div className='nav-bar-username' onClick={handleUser}>{user.username}</div>
+          </div>
           <div className='nav-bar-logout' onClick={handleLogout}>Log out</div>
         </div>
       )}

@@ -58,6 +58,9 @@ api.interceptors.response.use(
           localStorage.setItem('user', JSON.stringify(data.user))
         }
 
+        // Trigger event to update auth context
+        window.dispatchEvent(new Event('auth-changed'))
+
         // Retry the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
         return api(originalRequest)
@@ -117,5 +120,59 @@ export const logoutUser = async () => {
   }
 }
 
+// Admin functions
+export const getAllUsers = async (search = '') => {
+  try {
+    const params = search ? { search } : {}
+    const { data } = await api.get('/users', { params })
+    return data
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch users'
+    throw new Error(message)
+  }
+}
 
-export default { registerUser, loginUser, logoutUser }
+export const updateUserRole = async (userId, role) => {
+  try {
+    const { data } = await api.patch(`/users/${userId}/role`, { role })
+    return data
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to update user role'
+    throw new Error(message)
+  }
+}
+
+export const getUserById = async (userId) => {
+  try {
+    const { data } = await api.get(`/users/${userId}`)
+    return data
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch user'
+    throw new Error(message)
+  }
+}
+
+export const deleteUser = async (userId) => {
+  try {
+    const { data } = await api.delete(`/users/${userId}`)
+    return data
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to delete user'
+    throw new Error(message)
+  }
+}
+
+
+export default { registerUser, loginUser, logoutUser, getAllUsers, updateUserRole, getUserById, deleteUser }

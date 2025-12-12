@@ -13,6 +13,7 @@ import QuizDetailPage from './pages/QuizDetailPage'
 import RequireAdmin from './components/RequireAdmin'
 import QuizFormPage from './pages/QuizFormPage'
 import ProfilePage from './pages/ProfilePage'
+import RequireGuest from './components/RequireGuest'
 
 const App = () => {
   const location = useLocation()
@@ -35,9 +36,21 @@ const App = () => {
         />
         <main className="app-main">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage showToast={showToast} />} />
-            <Route path="/register" element={<RegisterPage showToast={showToast} />} />
+            <Route path="/" element={
+              <RequireGuest>
+                <HomePage />
+              </RequireGuest>
+            } />
+            <Route path="/login" element={
+              <RequireGuest>
+                <LoginPage showToast={showToast} />
+              </RequireGuest>
+            } />
+            <Route path="/register" element={
+              <RequireGuest>
+                <RegisterPage showToast={showToast} />
+              </RequireGuest>
+            } />
             <Route path="/my" element={
               <RequireAuth>
                 <QuizPage />
