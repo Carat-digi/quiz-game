@@ -8,6 +8,7 @@ const logger = require('./src/utils/logger')
 const authRouter = require('./src/routes/authRout')
 const quizRouter = require('./src/routes/quizRout')
 const resultRouter = require('./src/routes/resultRout')
+const userRouter = require('./src/routes/userRout')
 const AppError = require('./src/utils/appError')
 const errorHandler = require('./src/middleware/errorHandler')
 
@@ -36,6 +37,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRouter)
 app.use('/api/quizzes', quizRouter)
 app.use('/api/results', resultRouter)
+app.use('/api/users', userRouter)
 
 app.get('/', (req, res) => {
   res.send('<h1>Welcome to the Backend!</h1>')
