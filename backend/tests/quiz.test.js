@@ -52,10 +52,10 @@ describe('Quiz tests', () => {
     await helper.closeDatabase()
   })
 
-  describe('GET /api/quizz - Get list of quizzes', () => {
+  describe('GET /api/quizzes - Get list of quizzes', () => {
     test('quizzes are returned in JSON format', async () => {
       const response = await api
-        .get('/api/quizz')
+        .get('/api/quizzes')
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -64,20 +64,20 @@ describe('Quiz tests', () => {
     })
 
     test('correct number of quizzes is returned', async () => {
-      const response = await api.get('/api/quizz')
+      const response = await api.get('/api/quizzes')
 
       assert.strictEqual(response.body.quizzes.length, 1)
       assert.strictEqual(response.body.quizzes[0].title, 'JavaScript Basics')
     })
   })
 
-  describe('GET /api/quizz/:id - Get quiz by ID', () => {
+  describe('GET /api/quizzes/:id - Get quiz by ID', () => {
     test('successful retrieval of existing quiz', async () => {
       const quizzes = await helper.quizzesInDb()
       const quizToView = quizzes[0]
 
       const response = await api
-        .get(`/api/quizz/${quizToView.id}`)
+        .get(`/api/quizzes/${quizToView.id}`)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -88,7 +88,7 @@ describe('Quiz tests', () => {
       const validNonexistingId = await helper.nonExistingId()
 
       await api
-        .get(`/api/quizz/${validNonexistingId}`)
+        .get(`/api/quizzes/${validNonexistingId}`)
         .expect(404)
     })
 
@@ -96,12 +96,12 @@ describe('Quiz tests', () => {
       const invalidId = '12345'
       
       await api
-        .get(`/api/quizz/${invalidId}`)
+        .get(`/api/quizzes/${invalidId}`)
         .expect(400)
     })
   })
 
-  describe('POST /api/quizz - Create quiz', () => {
+  describe('POST /api/quizzes - Create quiz', () => {
     test('admin can create a quiz', async () => {
       const newQuiz = {
         title: 'Node.js Basics',
@@ -112,7 +112,7 @@ describe('Quiz tests', () => {
       }
 
       await api
-        .post('/api/quizz')
+        .post('/api/quizzes')
         .set('Authorization', `Bearer ${adminToken}`)
         .send(newQuiz)
         .expect(201)
@@ -134,19 +134,19 @@ describe('Quiz tests', () => {
       }
 
       await api
-        .post('/api/quizz')
+        .post('/api/quizzes')
         .send(newQuiz)
         .expect(401)
     })
   })
 
-  describe('DELETE /api/quizz/:id - Delete quiz', () => {
+  describe('DELETE /api/quizzes/:id - Delete quiz', () => {
     test('admin can delete a quiz', async () => {
       const quizzesAtStart = await helper.quizzesInDb()
       const quizToDelete = quizzesAtStart[0]
 
       await api
-        .delete(`/api/quizz/${quizToDelete.id}`)
+        .delete(`/api/quizzes/${quizToDelete.id}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(200)
 
@@ -159,7 +159,7 @@ describe('Quiz tests', () => {
       const quizToDelete = quizzes[0]
 
       await api
-        .delete(`/api/quizz/${quizToDelete.id}`)
+        .delete(`/api/quizzes/${quizToDelete.id}`)
         .expect(401)
     })
   })

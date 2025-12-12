@@ -36,7 +36,7 @@ describe('Basic API tests', () => {
 
   test('GET request to /api/quizz returns json', async () => {
     const response = await api
-      .get('/api/quizz')
+      .get('/api/quizzes')
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
