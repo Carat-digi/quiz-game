@@ -5,17 +5,29 @@ body {
   margin: 0;
   padding: 0;
   position: relative;
+  font-size: 1rem;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.app-main {
+  flex: 1;
 }
 
 .footer {
   background-color: #30292F;
   color: white;
   text-align: center;
-  position: fixed;
   bottom: 0;
   width: 100%;
   margin: 0;
-  padding: 0.5rem 0;
+  padding: 0.45rem 0;
+  font-size: 0.9rem;
 }
 
 .nav-bar {
