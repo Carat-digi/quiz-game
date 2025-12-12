@@ -33,7 +33,7 @@ const userSchema = mongoose.Schema({
         required: true
       },
       timeSpent: {
-        type: Number, // в секундах
+        type: Number, // in seconds
         default: 0
       },
       attempts: {

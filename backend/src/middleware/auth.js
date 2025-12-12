@@ -15,10 +15,20 @@ const authenticate = asyncHandler(async (req, res, next) => {
     throw new AppError('Not authorized', 401)
   }
   
-  const decoded = jwt.verify(token, config.JWT_SECRET)
-  req.user = await User.findById(decoded.id)
-  
-  next()
+  try {
+    const decoded = jwt.verify(token, config.JWT_SECRET)
+    req.user = await User.findById(decoded.id)
+    next()
+  } catch (error) {
+    // Handle JWT errors with proper status codes
+    if (error.name === 'TokenExpiredError') {
+      throw new AppError('Token expired', 401)
+    }
+    if (error.name === 'JsonWebTokenError') {
+      throw new AppError('Invalid token', 401)
+    }
+    throw error
+  }
 })
 
 const requireAdmin = asyncHandler(async (req, res, next) => {

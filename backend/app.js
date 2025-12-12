@@ -32,7 +32,7 @@ app.use(cookieParser())
 
 // API routes
 app.use('/api/auth', authRouter)
-app.use('/api/quizz', quizRouter)
+app.use('/api/quizzes', quizRouter)
 
 app.get('/', (req, res) => {
   res.send('<h1>Welcome to the Backend!</h1>')

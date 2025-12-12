@@ -4,9 +4,9 @@ const { v4: uuidv4 } = require('uuid')
 const User = require('../models/user')
 const asyncHandler = require('../middleware/asyncHandler')
 const AppError = require('../utils/appError')
+const config = require('../utils/config')
 
-// для куки надо
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access-secret'
+const ACCESS_SECRET = config.JWT_SECRET
 const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m'
 
 // const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh-secret'
@@ -107,7 +107,7 @@ exports.login = asyncHandler(async (req, res) => {
 
   setRefreshCookie(res, refreshToken)
   
-  res.status(200).json({ accessToken, user: { id: userInBase._id, username: userInBase.username } })
+  res.status(200).json({ accessToken, user: { id: userInBase._id, username: userInBase.username, root: userInBase.root } })
 })
 
 exports.refreshToken = asyncHandler(async (req, res) => {
@@ -141,7 +141,10 @@ exports.refreshToken = asyncHandler(async (req, res) => {
   }
 
   const accessToken = createToken(userForToken)
-  return res.json({ accessToken })
+  return res.json({ 
+    accessToken,
+    user: { id: userInBase._id, username: userInBase.username, root: userInBase.root }
+  })
 })
 
 exports.logout = asyncHandler(async (req, res) => {
