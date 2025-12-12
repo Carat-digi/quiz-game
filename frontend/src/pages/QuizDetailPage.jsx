@@ -24,6 +24,7 @@ const QuizDetailPage = () => {
   const [showResults, setShowResults] = useState(false)
   const [score, setScore] = useState(0)
   const [resultInfo, setResultInfo] = useState(null)
+  const [showAnswerReview, setShowAnswerReview] = useState(false)
   // Timer states
   const [timeRemaining, setTimeRemaining] = useState(null)
   const [timerExpired, setTimerExpired] = useState(false)
@@ -234,8 +235,53 @@ const QuizDetailPage = () => {
 
         <div className="result-actions">
           <button onClick={() => navigate('/my')}>Back to Quizzes</button>
+          <button onClick={() => setShowAnswerReview(!showAnswerReview)}>
+            {showAnswerReview ? 'Hide Details' : 'Show My Answers'}
+          </button>
           <button onClick={() => window.location.reload()}>Try Again</button>
         </div>
+
+        {showAnswerReview && (
+          <div className="answer-review">
+            <h2>Detailed Review</h2>
+            {shuffledQuestions.map((question, qIndex) => {
+              const userAnswer = answers[qIndex]
+              const isCorrect = userAnswer === question.answerIndex
+              return (
+                <div key={qIndex} className="review-question">
+                  <div className="review-question-header">
+                    <span className="question-number">Question {qIndex + 1}</span>
+                    <span className={`result-badge ${isCorrect ? 'correct' : 'incorrect'}`}>
+                      {isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                    </span>
+                  </div>
+                  <h3 className="review-question-text">{question.question}</h3>
+                  <div className="review-options">
+                    {question.options.map((option, oIndex) => {
+                      const isUserAnswer = userAnswer === oIndex
+                      const isCorrectAnswer = oIndex === question.answerIndex
+
+                      let className = 'review-option'
+                      if (isCorrectAnswer) {
+                        className += ' correct-answer'
+                      } else if (isUserAnswer && !isCorrect) {
+                        className += ' wrong-answer'
+                      }
+
+                      return (
+                        <div key={oIndex} className={className}>
+                          <span className="option-text">{option}</span>
+                          {isCorrectAnswer && <span className="badge correct">✓ Correct Answer</span>}
+                          {isUserAnswer && !isCorrect && <span className="badge wrong">✗ Your Answer</span>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     )
   }

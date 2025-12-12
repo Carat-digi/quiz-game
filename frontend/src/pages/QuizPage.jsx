@@ -71,7 +71,7 @@ const QuizPage = () => {
             <label htmlFor="sort" className="sort-label">Sort by:</label>
             <select id="sort" name="sort" value={sort} onChange={handleSortChange} className="sort-select">
               <option value="alphabetical">A-Z</option>
-              <option value="dateAdded">Date Add</option>
+              <option value="dateAdded">Date</option>
             </select>
           </div>
           {user?.root === 'admin' && (
@@ -96,26 +96,26 @@ const QuizPage = () => {
               ))}
             </div>
 
-            {pagination && pagination.totalPages > 1 && (
-              <div className="pagination">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                >
-                  Previous
-                </button>
-                <span>Page {pagination.currentPage} of {pagination.totalPages}</span>
-                <button
-                  disabled={!pagination.hasMore}
-                  onClick={() => setPage(page + 1)}
-                >
-                  Next
-                </button>
-              </div>
-            )}
           </>
         )}
       </div>
+      {pagination && pagination.totalPages > 1 && (
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Previous
+          </button>
+          <span>Page {pagination.currentPage} of {pagination.totalPages}</span>
+          <button
+            disabled={!pagination.hasMore}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   )
 }

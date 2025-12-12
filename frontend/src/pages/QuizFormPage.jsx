@@ -19,7 +19,7 @@ const QuizFormPage = () => {
   const [questions, setQuestions] = useState([
     {
       question: '',
-      options: ['', '', '', ''], // default 4 options
+      options: ['', ''], // default 2 options
       answerIndex: 0
     }
   ])
@@ -27,6 +27,7 @@ const QuizFormPage = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState({ message: '', type: '' })
+  const [invalidFields, setInvalidFields] = useState({})
 
   // handle changes in main quiz data
   const handleQuizChange = (e) => {
@@ -87,7 +88,7 @@ const QuizFormPage = () => {
       ...questions,
       {
         question: '',
-        options: ['', '', '', ''],
+        options: ['', ''],
         answerIndex: 0
       }
     ])
@@ -105,45 +106,55 @@ const QuizFormPage = () => {
 
   // validate form before submission
   const validateForm = () => {
+    const invalid = {}
+    const errorMessages = []
+
     if (!quizData.title.trim()) {
-      setError('Enter quiz title')
-      return false
+      invalid.title = true
+      errorMessages.push('Quiz title is required')
     }
     if (!quizData.category.trim()) {
-      setError('Select category')
-      return false
+      invalid.category = true
+      errorMessages.push('Category is required')
     }
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i]
       if (!q.question.trim()) {
-        setError(`Fill in the text of question ${i + 1}`)
-        return false
+        invalid[`question-${i}`] = true
+        errorMessages.push(`Question ${i + 1} text is required`)
       }
       if (q.options.length < 2) {
-        setError(`Question ${i + 1} must have at least 2 answer options`)
-        return false
+        errorMessages.push(`Question ${i + 1} must have at least 2 answer options`)
       }
       for (let j = 0; j < q.options.length; j++) {
         if (!q.options[j].trim()) {
-          setError(`Fill in option ${j + 1} in question ${i + 1}`)
-          return false
+          invalid[`option-${i}-${j}`] = true
+          errorMessages.push(`Question ${i + 1}, option ${j + 1} is required`)
         }
       }
     }
 
+    if (errorMessages.length > 0) {
+      setInvalidFields(invalid)
+      setError('Please fill in all required fields')
+      setToast({ message: 'Please fill in all required fields', type: 'error' })
+      return false
+    }
+
+    setInvalidFields({})
     return true
   }
 
   // handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
 
     if (!validateForm()) {
       return
     }
 
+    setError('')
     setLoading(true)
 
     try {
@@ -197,12 +208,12 @@ const QuizFormPage = () => {
                     value={quizData.title}
                     onChange={handleQuizChange}
                     placeholder="Enter quiz title"
-                    required
+                    className={invalidFields.title ? 'invalid' : ''}
                   />
                 </div>
 
                 <div className="form-group quiz-description">
-                  <label htmlFor="description">Description</label>
+                  <label htmlFor="description">Description *</label>
                   <textarea
                     id="description"
                     name="description"
@@ -210,18 +221,18 @@ const QuizFormPage = () => {
                     onChange={handleQuizChange}
                     placeholder="Describe the quiz"
                     rows="3"
+                    className={invalidFields.title ? 'invalid' : ''}
                   />
                 </div>
 
                 <div className="form-group quiz-category">
                   <label htmlFor="category">Category *</label>
                   <select
-                    className="category-select"
+                    className={`category-select ${invalidFields.category ? 'invalid' : ''}`}
                     id="category"
                     name="category"
                     value={quizData.category}
                     onChange={handleQuizChange}
-                    required
                   >
                     <option value="">Select category</option>
                     <option value="science">Science</option>
@@ -277,7 +288,7 @@ const QuizFormPage = () => {
                         value={question.question}
                         onChange={(e) => handleQuestionChange(questionIndex, e.target.value)}
                         placeholder="Enter question text"
-                        required
+                        className={invalidFields[`question-${questionIndex}`] ? 'invalid' : ''}
                       />
                     </div>
 
@@ -309,7 +320,7 @@ const QuizFormPage = () => {
                               value={option}
                               onChange={(e) => handleOptionChange(questionIndex, optionIndex, e.target.value)}
                               placeholder={`Option ${optionIndex + 1}`}
-                              required
+                              className={invalidFields[`option-${questionIndex}-${optionIndex}`] ? 'invalid' : ''}
                             />
                             {question.options.length > 2 && (
                               <button

@@ -3,6 +3,8 @@
   background: linear-gradient(135deg, #f8f7f7 0%, #f3f1f1 100%);
   min-height: calc(100vh - 100px);
   font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
 .loading {
@@ -126,14 +128,13 @@
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  max-width: 17rem;
+  width: 90%;
   background: white;
   border: none;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(48, 41, 47, 0.1);
   transition: all 0.3s ease;
   overflow: hidden;
-
 }
 
 .quiz-tile:hover {
@@ -156,13 +157,33 @@
   color: #666;
 }
 
+.quiz-description-container {
+  margin: 0.5rem 0;
+}
+
+.btn-expand {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  margin-top: 0.3rem;
+  transition: color 0.3s;
+}
+
+.btn-expand:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
 .quiz-footer {
   margin-top: auto;
 }
 
 .quiz-meta {
   display: flex;
-  /* justify-content:  */
   gap: 1rem;
   margin: 0.8rem 0 0.2rem 0;
   font-size: 0.7rem;
@@ -235,6 +256,52 @@
 
 .btn-quiz-delete:active {
   transform: translateY(0);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: auto;
+  padding: 3rem 0 0;
+}
+
+.pagination button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #ccc;
+  color: #999;
+}
+
+.pagination span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  padding: 0 1rem;
+  min-width: 150px;
+  text-align: center;
 }
 
 @media (min-width: 980px) and (max-width: 1200px) {

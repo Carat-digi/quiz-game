@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/authContext'
 import { deleteQuiz } from '../api/quiz'
 import { useState } from 'react'
 import Toast from './Toast'
+import ConfirmDialog from './ConfirmDialog'
 import logger from '../utils/logger'
 
 const QuizTile = ({ quiz, onDelete }) => {
@@ -10,26 +11,21 @@ const QuizTile = ({ quiz, onDelete }) => {
   const { user } = useAuth()
   const [deleting, setDeleting] = useState(false)
   const [toast, setToast] = useState({ message: '', type: '' })
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const maxLength = 100 // Maximum characters to show before truncating
 
   const handleClick = () => {
     navigate(`/quiz/${quiz.id}`)
   }
 
   const handleDelete = async (e) => {
-    // Logic to handle quiz deletion
-    logger.log('Delete Quiz button clicked')
     e.stopPropagation()
+    setShowConfirm(true)
+  }
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${quiz.title}"?\n\nThis will:\n` +
-      '- Delete the quiz\n' +
-      `- Delete all ${quiz.questions?.length || 0} questions\n` +
-      '- Remove all user results for this quiz\n\n' +
-      'This action cannot be undone!'
-    )
-
-    if (!confirmed) return
-
+  const confirmDelete = async () => {
     setDeleting(true)
 
     try {
@@ -53,6 +49,18 @@ const QuizTile = ({ quiz, onDelete }) => {
 
   return (
     <>
+      <ConfirmDialog
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Quiz?"
+        message={`Are you sure you want to delete "${quiz.title}"?`}
+        details={[
+          'Delete the quiz',
+          'Delete all questions associated with the quiz',
+          'Remove all user results for this quiz'
+        ]}
+      />
       <Toast
         message={toast.message}
         type={toast.type}
@@ -60,7 +68,24 @@ const QuizTile = ({ quiz, onDelete }) => {
       />
       <div className="quiz-tile">
         <h3>{quiz.title}</h3>
-        <p className="quiz-description">{quiz.description}</p>
+        <div className="quiz-description-container">
+          <p className="quiz-description">
+            {isExpanded || quiz.description.length <= maxLength
+              ? quiz.description
+              : `${quiz.description.substring(0, maxLength)}...`}
+          </p>
+          {quiz.description.length > maxLength && (
+            <button
+              className="btn-expand"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsExpanded(!isExpanded)
+              }}
+            >
+              {isExpanded ? 'Show less' : 'Read more'}
+            </button>
+          )}
+        </div>
         <div className="quiz-footer">
           <div className="quiz-meta">
             {quiz.timeLimit && (
@@ -69,7 +94,7 @@ const QuizTile = ({ quiz, onDelete }) => {
               </span>
             )}
             <span className="quiz-category">{quiz.category}</span>
-            <span className="quiz-creator">By: {quiz.creator?.username || 'QuizMan'}</span>
+            {/* <span className="quiz-creator">By: {quiz.creator?.username || 'QuizMan'}</span> */}
           </div>
           <div className="quiz-actions">
             <button onClick={handleClick} className="btn-take-quiz">Take Quiz</button>
