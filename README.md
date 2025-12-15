@@ -121,6 +121,33 @@ npm run test:watch
   - `options` (array of strings)
   - `answerIndex` (index of correct option)
 
+**Sample database files:**
+
+The project includes three example JSON files (MongoDB exports) showing real database content:
+
+- `users-db-example.json` — sample users with different roles (admin/user), quiz results, and statistics
+- `quizzes-db-example.json` — example quizzes covering geography, science, and technology topics
+- `questions-db-example.json` — actual quiz questions with multiple-choice answers
+
+These files can be used to:
+- Understand the real data structure and relationships between collections
+- Seed your test database with sample content
+- Import into MongoDB using `mongoimport` command (example below)
+
+To import sample data into your MongoDB:
+```bash
+# Import users
+mongoimport --db quiz-game --collection users --file users-db-example.json --jsonArray
+
+# Import quizzes
+mongoimport --db quiz-game --collection quizzes --file quizzes-db-example.json --jsonArray
+
+# Import questions
+mongoimport --db quiz-game --collection questions --file questions-db-example.json --jsonArray
+```
+
+Note: Make sure to adjust the database name (`quiz-game`) if you're using a different one in your `.env` configuration.
+
 **API endpoints (HTTP path → brief):**
 
 - Auth (`/api/auth`)
